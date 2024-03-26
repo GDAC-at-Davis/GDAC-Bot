@@ -1,0 +1,33 @@
+{
+  "name": "gdac-bot",
+  "version": "1.0.0",
+  "description": "Bot for Game Development and Arts Club at UC Davis",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx tsc && echo 'Compiled Successfully\n' && node dist/src/app.js",
+    "format": "npx prettier -w ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KaoushikMurugan/gdac-bot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KaoushikMurugan/gdac-bot/issues"
+  },
+  "homepage": "https://github.com/KaoushikMurugan/gdac-bot#readme",
+  "devDependencies": {
+    "typescript": "^5.4.3"
+  },
+  "engines": {
+    "node": ">=18.12.0"
+  },
+  "type": "module",
+  "dependencies": {
+    "discord-api-types": "^0.37.76",
+    "discord.js": "^14.12.1"
+  }
+}
