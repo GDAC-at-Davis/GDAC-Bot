@@ -8,6 +8,7 @@ function DisplayEmbed(officerList: GuildMember[], roomName: string): EmbedData {
         return {
             embeds: [
                 {
+                    color: 0xff0000,
                     title: `${roomName} is closed`,
                     description: 'No officers are currently in the room'
                 }
@@ -18,6 +19,7 @@ function DisplayEmbed(officerList: GuildMember[], roomName: string): EmbedData {
     return {
         embeds: [
             {
+                color: 0x00ff00,
                 title: `${roomName} is open`,
                 description: `Officers in the room: \n${officerNames}`
             }

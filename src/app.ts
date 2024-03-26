@@ -1,4 +1,4 @@
-import { Collection, Events } from 'discord.js';
+import { Collection, Events, GuildMember, Message } from 'discord.js';
 
 import { handleButton } from './button-handler.js';
 import { allServerData, client } from './client.js';
@@ -15,7 +15,43 @@ client.on(Events.ClientReady, async () => {
     client.deployCommands();
 });
 
+client.on(Events.GuildMemberRemove, async member => {
+    var guildMember: GuildMember;
+    if (member.partial) {
+        guildMember = await member.fetch();
+    } else {
+        guildMember = member;
+    }
+    const server = allServerData.get(guildMember.guild.id);
+    if (server === undefined) {
+        return;
+    }
+    server.removeOfficerFromRoom(guildMember);
+});
+
+client.on(Events.GuildRoleDelete, async role => {
+    allServerData.forEach(server => {
+        if (server.getOfficerRole() === role.id) {
+            server.setOfficerRole(null);
+        }
+    });
+});
+
 client.on(Events.MessageCreate, async message => {});
+
+client.on(Events.MessageDelete, async message => {
+    var guildMessage: Message;
+    if (message.partial) {
+        guildMessage = await message.fetch();
+    } else {
+        guildMessage = message;
+    }
+    const server = allServerData.get(guildMessage.guild?.id ?? '');
+    if (server === undefined) {
+        return;
+    }
+    server.removeDisplay(guildMessage);
+});
 
 client.on(Events.InteractionCreate, async interaction => {
     if (interaction.isButton()) {

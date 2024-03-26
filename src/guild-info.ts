@@ -76,6 +76,13 @@ class GuildInfo {
         }));
     }
 
+    public removeDisplay(message: Message): void {
+        if (this.displayMessages.some(display => display.id === message.id)) {
+            this.displayMessages = this.displayMessages.filter(display => display.id !== message.id);
+            backupServerSettings(this.guild.id);
+        }
+    }
+
     public toJSON(): GuildInfoBackup {
         return {
             guildId: this.guild.id,
