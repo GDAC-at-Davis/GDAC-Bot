@@ -22,19 +22,6 @@ export default {
             return;
         }
 
-        // member must have officer role
-        const member = interaction.member as GuildMember;
-        if (
-            server.getOfficerRole() !== null &&
-            !member.roles.cache.has(server.getOfficerRole() ?? '')
-        ) {
-            await interaction.reply({
-                content: 'You do not have permission to use this command.',
-                ephemeral: true
-            });
-            return;
-        }
-
         await interaction.reply({
             content: `Server room name is ${server.getRoomName()}`,
             ephemeral: true

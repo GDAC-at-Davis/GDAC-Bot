@@ -24,3 +24,5 @@ function DisplayEmebed(officerList: GuildMember[], roomName: string): EmbedData 
         ]
     };
 }
+
+export { DisplayEmebed };

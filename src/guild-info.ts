@@ -37,14 +37,23 @@ class GuildInfo {
         return this.officersInRoom;
     }
 
-    public addOfficerToRoom(member: GuildMember): void {
+    public addOfficerToRoom(member: GuildMember): boolean {
+        if (this.officersInRoom.some(officer => officer.id === member.id)) {
+            return false;
+        }
         this.officersInRoom.push(member);
+        backupServerSettings(this.guild.id);
+        return true;
     }
 
-    public removeOfficerFromRoom(member: GuildMember): void {
-        this.officersInRoom = this.officersInRoom.filter(officer => officer.id !== member.id);
+    public removeOfficerFromRoom(member: GuildMember): boolean {
+        if (this.officersInRoom.some(officer => officer.id === member.id)) {
+            this.officersInRoom = this.officersInRoom.filter(officer => officer.id !== member.id);
+            backupServerSettings(this.guild.id);
+            return true;
+        }
+        return false;
     }
-
     
     public toJSON(): GuildInfoBackup {
         return {
