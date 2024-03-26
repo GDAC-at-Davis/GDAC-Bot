@@ -7,6 +7,9 @@ export default {
     async execute(interaction: ChatInputCommandInteraction) {
         // return time delay between sending the command and receiving the response
         const timeDelay = Date.now() - interaction.createdTimestamp;
-        await interaction.reply(`Pong! ${timeDelay}ms`);
+        await interaction.reply({
+            content: `Pong! ${timeDelay}ms`,
+            ephemeral: true
+        });
     }
 } as commandData;

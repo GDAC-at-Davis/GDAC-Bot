@@ -1,12 +1,16 @@
-import { Events } from 'discord.js';
+import { Collection, Events } from 'discord.js';
 
 import { handleButton } from './button-handler.js';
-import { client } from './client.js';
+import { allServerData, client } from './client.js';
 
 import bot_creds from '../bot_creds.json' assert { type: 'json' };
+import { restoreServerSettings } from './backup.js';
+import { GuildInfo } from './guild-info.js';
 
 client.on(Events.ClientReady, async () => {
     console.log('\nBot is ready!');
+
+    await restoreServerSettings();
 
     client.deployCommands();
 });
@@ -32,9 +36,13 @@ client.on(Events.InteractionCreate, async interaction => {
     }
 });
 
-client.on(Events.GuildCreate, guild => {});
+client.on(Events.GuildCreate, guild => {
+    allServerData.set(guild.id, new GuildInfo(guild));
+});
 
-client.on(Events.GuildDelete, guild => {});
+client.on(Events.GuildDelete, guild => {
+    allServerData.delete(guild.id);
+});
 
 client
     .login(bot_creds.token)
