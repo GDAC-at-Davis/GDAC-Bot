@@ -35,7 +35,7 @@ export default {
             return;
         }
 
-        const success = server.removeOfficerFromRoom(member);
+        const success = await server.removeOfficerFromRoom(member);
         
         if (!success) {
             await interaction.reply({

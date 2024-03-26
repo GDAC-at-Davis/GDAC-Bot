@@ -1,12 +1,13 @@
 import {
     ChatInputCommandInteraction,
     GuildMember,
-    SlashCommandBuilder
+    SlashCommandBuilder,
+    TextBasedChannel,
+    TextChannel
 } from 'discord.js';
 
 import { commandData } from '../utilities.js';
 import { allServerData } from '../client.js';
-import { DisplayEmebed } from '../display-embed.js';
 
 export default {
     data: new SlashCommandBuilder()
@@ -36,10 +37,10 @@ export default {
             return;
         }
 
-        const embed = DisplayEmebed(server.getOfficersInRoom(), server.getRoomName() ?? '‼️Room Name Not Set‼️');
-        const channel = interaction.channel;
+        const channel = interaction.channel as TextBasedChannel;
 
-        await channel?.send(embed);
+        await server.createNewDisplay(channel);
+
         await interaction.reply({
             content: 'Display created',
             ephemeral: true

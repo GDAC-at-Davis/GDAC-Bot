@@ -53,7 +53,7 @@ export default {
             server = allServerData.get(serverId);
         }
 
-        server!.setOfficerRole(officerRole.id);
+        await server!.setOfficerRole(officerRole.id);
 
         await interaction.reply({
             content: `Set officer role to ${officerRole.toString()}`,

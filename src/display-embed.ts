@@ -2,7 +2,7 @@ import { BaseMessageOptions, GuildMember } from 'discord.js';
 
 type EmbedData = Pick<BaseMessageOptions, 'embeds'>;
 
-function DisplayEmebed(officerList: GuildMember[], roomName: string): EmbedData {
+function DisplayEmbed(officerList: GuildMember[], roomName: string): EmbedData {
     const isOpen = officerList.length > 0;
     if (!isOpen) {
         return {
@@ -25,4 +25,4 @@ function DisplayEmebed(officerList: GuildMember[], roomName: string): EmbedData 
     };
 }
 
-export { DisplayEmebed };
+export { DisplayEmbed };

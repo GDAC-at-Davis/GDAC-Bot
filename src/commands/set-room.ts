@@ -58,7 +58,7 @@ export default {
             return;
         }
 
-        server!.setRoomName(roomName);
+        await server!.setRoomName(roomName);
 
         await interaction.reply({
             content: `Set room name to ${roomName}`,

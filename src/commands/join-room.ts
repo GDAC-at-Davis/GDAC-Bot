@@ -35,7 +35,7 @@ export default {
             return;
         }
 
-        const success = server.addOfficerToRoom(member);
+        const success = await server.addOfficerToRoom(member);
         if (!success) {
             await interaction.reply({
                 content: 'You are already in the room',

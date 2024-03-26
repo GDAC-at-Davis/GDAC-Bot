@@ -8,6 +8,7 @@ const baseClient: Client<true> = new Client({
     intents: [GatewayIntentBits.GuildMessages, GatewayIntentBits.Guilds],
     partials: [
         Partials.Message,
+        Partials.Channel,
         Partials.Reaction,
         Partials.User,
         Partials.GuildMember,

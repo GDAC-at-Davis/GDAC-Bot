@@ -1,66 +1,88 @@
-import { Guild, GuildMember, Snowflake } from 'discord.js';
+import { Guild, GuildMember, Message, Snowflake, TextBasedChannel, TextChannel } from 'discord.js';
 import { client } from './client.js';
 import { backupServerSettings } from './backup.js';
+import { DisplayEmbed } from './display-embed.js';
 
 class GuildInfo {
     public readonly guild: Guild;
     private officerRole: Snowflake | null;
     private roomName: string | null;
     private officersInRoom: GuildMember[] = [];
+    private displayMessages: Message[] = [];
 
-    constructor(guild: Guild, officerRole?: Snowflake | null, roomName?: string | null, officersInRoom?: GuildMember[]) {
+    constructor(guild: Guild, officerRole?: Snowflake | null, roomName?: string | null, officersInRoom?: GuildMember[], displayMessages?: Message[]) {
         this.guild = guild;
         this.officerRole = officerRole ?? null;
         this.roomName = roomName ?? null;
         this.officersInRoom = officersInRoom ?? [];
+        this.displayMessages = displayMessages ?? [];
     }
 
     public getOfficerRole(): Snowflake | null {
         return this.officerRole;
     }
 
-    public setOfficerRole(role: Snowflake | null): void {
+    public async setOfficerRole(role: Snowflake | null): Promise<void> {
         this.officerRole = role;
         backupServerSettings(this.guild.id);
+        this.updateDisplays();
     }
 
     public getRoomName(): string | null {
         return this.roomName;
     }
 
-    public setRoomName(name: string | null): void {
+    public async setRoomName(name: string | null): Promise<void> {
         this.roomName = name;
         backupServerSettings(this.guild.id);
+        this.updateDisplays();
     }
 
     public getOfficersInRoom(): GuildMember[] {
         return this.officersInRoom;
     }
 
-    public addOfficerToRoom(member: GuildMember): boolean {
+    public async addOfficerToRoom(member: GuildMember): Promise<boolean> {
         if (this.officersInRoom.some(officer => officer.id === member.id)) {
             return false;
         }
         this.officersInRoom.push(member);
         backupServerSettings(this.guild.id);
+        this.updateDisplays();
         return true;
     }
 
-    public removeOfficerFromRoom(member: GuildMember): boolean {
+    public async removeOfficerFromRoom(member: GuildMember): Promise<boolean> {
         if (this.officersInRoom.some(officer => officer.id === member.id)) {
             this.officersInRoom = this.officersInRoom.filter(officer => officer.id !== member.id);
             backupServerSettings(this.guild.id);
+            this.updateDisplays();
             return true;
         }
         return false;
     }
-    
+
+    public async createNewDisplay(channel: TextBasedChannel): Promise<void> {
+        const embed = DisplayEmbed(this.officersInRoom, this.roomName ?? '‼️Room Name Not Set‼️');
+        const message = await channel?.send(embed);
+        this.displayMessages.push(message as Message);
+        backupServerSettings(this.guild.id);
+    }
+
+    private async updateDisplays(): Promise<void> {
+        await Promise.all(this.displayMessages.map(async message => {
+            const embed = DisplayEmbed(this.officersInRoom, this.roomName ?? '‼️Room Name Not Set‼️');
+            await message.edit(embed);
+        }));
+    }
+
     public toJSON(): GuildInfoBackup {
         return {
             guildId: this.guild.id,
             officerRole: this.officerRole,
             roomName: this.roomName,
-            officersInRoom: this.officersInRoom.map(officer => officer.id)
+            officersInRoom: this.officersInRoom.map(officer => officer.id),
+            displayMessages: this.displayMessages.map(display => display.id)
         };
     }
 
@@ -70,7 +92,20 @@ class GuildInfo {
         const officersInRoom = await Promise.all(data.officersInRoom.map(async officerId => {
             return await guild.members.fetch(officerId);
         }));
-        const server = new GuildInfo(guild, data.officerRole, data.roomName, officersInRoom);
+        const displayMessages: Message[] = [];
+        const channels = await guild.channels.fetch();
+        channels.map(async channel => {
+            if (channel instanceof TextChannel) {
+                const messages = await channel.messages.fetch();
+                data.displayMessages.forEach(displayId => {
+                    const message = messages.get(displayId);
+                    if (message !== undefined) {
+                        displayMessages.push(message);
+                    }
+                });
+            }
+        });
+        const server = new GuildInfo(guild, data.officerRole, data.roomName, officersInRoom, displayMessages);
         return server;
     }
 }
@@ -80,6 +115,7 @@ type GuildInfoBackup = {
     officerRole: Snowflake | null;
     roomName: string | null;
     officersInRoom: Snowflake[];
+    displayMessages: Snowflake[];
 };
 
 export { GuildInfo, GuildInfoBackup };
