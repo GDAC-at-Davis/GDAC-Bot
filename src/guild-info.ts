@@ -1,7 +1,8 @@
 import { Guild, GuildMember, Message, Snowflake, TextBasedChannel, TextChannel } from 'discord.js';
 import { client } from './client.js';
 import { backupServerSettings } from './backup.js';
-import { DisplayEmbed } from './display-embed.js';
+import { DisplayEmbed } from './embeds/display-embed.js';
+import { ControlPanelEmbed } from './embeds/control-panel-embed.js';
 
 class GuildInfo {
     public readonly guild: Guild;
@@ -82,6 +83,10 @@ class GuildInfo {
             backupServerSettings(this.guild.id);
         }
     }
+
+    public async createControlPanel(channel: TextBasedChannel): Promise<void> {
+        channel.send(ControlPanelEmbed(this.officersInRoom, this.roomName ?? '‼️Room Name Not Set‼️'))
+}
 
     public toJSON(): GuildInfoBackup {
         return {
