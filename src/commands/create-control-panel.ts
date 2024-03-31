@@ -12,7 +12,9 @@ import { allServerData } from '../client.js';
 export default {
     data: new SlashCommandBuilder()
         .setName('create_control_panel')
-        .setDescription('Create a control panel with buttons for officers to join and leave'),
+        .setDescription(
+            'Create a control panel with buttons for officers to join and leave'
+        ),
     async execute(interaction: ChatInputCommandInteraction) {
         const serverId = interaction.guild?.id;
         const server = allServerData.get(serverId ?? '');

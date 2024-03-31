@@ -1,4 +1,11 @@
-import { Guild, GuildMember, Message, Snowflake, TextBasedChannel, TextChannel } from 'discord.js';
+import {
+    Guild,
+    GuildMember,
+    Message,
+    Snowflake,
+    TextBasedChannel,
+    TextChannel
+} from 'discord.js';
 import { client } from './client.js';
 import { backupServerSettings } from './backup.js';
 import { DisplayEmbed } from './embeds/display-embed.js';
@@ -11,7 +18,13 @@ class GuildInfo {
     private officersInRoom: GuildMember[] = [];
     private displayMessages: Message[] = [];
 
-    constructor(guild: Guild, officerRole?: Snowflake | null, roomName?: string | null, officersInRoom?: GuildMember[], displayMessages?: Message[]) {
+    constructor(
+        guild: Guild,
+        officerRole?: Snowflake | null,
+        roomName?: string | null,
+        officersInRoom?: GuildMember[],
+        displayMessages?: Message[]
+    ) {
         this.guild = guild;
         this.officerRole = officerRole ?? null;
         this.roomName = roomName ?? null;
@@ -55,7 +68,9 @@ class GuildInfo {
 
     public async removeOfficerFromRoom(member: GuildMember): Promise<boolean> {
         if (this.officersInRoom.some(officer => officer.id === member.id)) {
-            this.officersInRoom = this.officersInRoom.filter(officer => officer.id !== member.id);
+            this.officersInRoom = this.officersInRoom.filter(
+                officer => officer.id !== member.id
+            );
             backupServerSettings(this.guild.id);
             this.updateDisplays();
             return true;
@@ -64,29 +79,44 @@ class GuildInfo {
     }
 
     public async createNewDisplay(channel: TextBasedChannel): Promise<void> {
-        const embed = DisplayEmbed(this.officersInRoom, this.roomName ?? '‼️Room Name Not Set‼️');
+        const embed = DisplayEmbed(
+            this.officersInRoom,
+            this.roomName ?? '‼️Room Name Not Set‼️'
+        );
         const message = await channel?.send(embed);
         this.displayMessages.push(message as Message);
         backupServerSettings(this.guild.id);
     }
 
     private async updateDisplays(): Promise<void> {
-        await Promise.all(this.displayMessages.map(async message => {
-            const embed = DisplayEmbed(this.officersInRoom, this.roomName ?? '‼️Room Name Not Set‼️');
-            await message.edit(embed);
-        }));
+        await Promise.all(
+            this.displayMessages.map(async message => {
+                const embed = DisplayEmbed(
+                    this.officersInRoom,
+                    this.roomName ?? '‼️Room Name Not Set‼️'
+                );
+                await message.edit(embed);
+            })
+        );
     }
 
     public removeDisplay(message: Message): void {
         if (this.displayMessages.some(display => display.id === message.id)) {
-            this.displayMessages = this.displayMessages.filter(display => display.id !== message.id);
+            this.displayMessages = this.displayMessages.filter(
+                display => display.id !== message.id
+            );
             backupServerSettings(this.guild.id);
         }
     }
 
     public async createControlPanel(channel: TextBasedChannel): Promise<void> {
-        channel.send(ControlPanelEmbed(this.officersInRoom, this.roomName ?? '‼️Room Name Not Set‼️'))
-}
+        channel.send(
+            ControlPanelEmbed(
+                this.officersInRoom,
+                this.roomName ?? '‼️Room Name Not Set‼️'
+            )
+        );
+    }
 
     public toJSON(): GuildInfoBackup {
         return {
@@ -101,9 +131,11 @@ class GuildInfo {
     public static async fromJSON(data: GuildInfoBackup): Promise<GuildInfo> {
         const guildId = data.guildId;
         const guild = await client.guilds.fetch(guildId);
-        const officersInRoom = await Promise.all(data.officersInRoom.map(async officerId => {
-            return await guild.members.fetch(officerId);
-        }));
+        const officersInRoom = await Promise.all(
+            data.officersInRoom.map(async officerId => {
+                return await guild.members.fetch(officerId);
+            })
+        );
         const displayMessages: Message[] = [];
         const channels = await guild.channels.fetch();
         channels.map(async channel => {
@@ -117,7 +149,13 @@ class GuildInfo {
                 });
             }
         });
-        const server = new GuildInfo(guild, data.officerRole, data.roomName, officersInRoom, displayMessages);
+        const server = new GuildInfo(
+            guild,
+            data.officerRole,
+            data.roomName,
+            officersInRoom,
+            displayMessages
+        );
         return server;
     }
 }

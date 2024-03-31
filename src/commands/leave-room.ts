@@ -36,7 +36,7 @@ export default {
         }
 
         const success = await server.removeOfficerFromRoom(member);
-        
+
         if (!success) {
             await interaction.reply({
                 content: 'You are not in the room',
