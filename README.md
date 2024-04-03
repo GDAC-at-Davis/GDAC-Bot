@@ -1,3 +1,5 @@
-# gdac-bot
+# Alt-Control Lab Discord Bot
 
-Bot for Game Development and Arts Club at UC Davis
+Discord Bot for the Alt-Control Lab at UC Davis
+
+Maintained by GDAC
