@@ -4,10 +4,11 @@ import {
     SlashCommandBuilder
 } from 'discord.js';
 
-import { commandData } from '../utilities.js';
-import { allServerData } from '../client.js';
+import { CommandData, CommandType } from '../utilities.js';
+import { allServerData, roomInfo } from '../client.js';
 
 export default {
+    type: CommandType.GLOBAL,
     data: new SlashCommandBuilder()
         .setName('get_room')
         .setDescription('Get the room name for the server.'),
@@ -23,8 +24,8 @@ export default {
         }
 
         await interaction.reply({
-            content: `Server room name is ${server.getRoomName()}`,
+            content: `Server room name is ${roomInfo.getRoomName()}`,
             ephemeral: true
         });
     }
-} as commandData;
+} as CommandData;

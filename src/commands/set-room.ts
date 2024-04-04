@@ -4,12 +4,14 @@ import {
     SlashCommandBuilder
 } from 'discord.js';
 
-import { commandData } from '../utilities.js';
-import { allServerData } from '../client.js';
+import { CommandData, CommandType } from '../utilities.js';
+import { allServerData, roomInfo } from '../client.js';
 import { GuildInfo } from '../guild-info.js';
 import { backupServerSettings } from '../backup.js';
+import { RoomInfo } from '../room-info.js';
 
 export default {
+    type: CommandType.RESTRICTED,
     data: new SlashCommandBuilder()
         .setName('set_room')
         .setDescription('Set room name for the server.')
@@ -58,11 +60,11 @@ export default {
             return;
         }
 
-        await server!.setRoomName(roomName);
+        await roomInfo.setRoomName(roomName);
 
         await interaction.reply({
             content: `Set room name to ${roomName}`,
             ephemeral: true
         });
     }
-} as commandData;
+} as CommandData;

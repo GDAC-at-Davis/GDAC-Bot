@@ -1,8 +1,9 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
 
-import { commandData } from '../utilities.js';
+import { CommandData, CommandType } from '../utilities.js';
 
 export default {
+    type: CommandType.GLOBAL,
     data: new SlashCommandBuilder().setName('ping').setDescription('Replies with Pong!'),
     async execute(interaction: ChatInputCommandInteraction) {
         // return time delay between sending the command and receiving the response
@@ -12,4 +13,4 @@ export default {
             ephemeral: true
         });
     }
-} as commandData;
+} as CommandData;

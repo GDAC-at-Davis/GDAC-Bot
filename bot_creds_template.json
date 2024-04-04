@@ -1,4 +1,6 @@
 {
     "id": "",
-    "token": ""
+    "token": "",
+    "restrictedGuildIDs": [],
+    "superUserIDs": []
 }

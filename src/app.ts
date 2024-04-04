@@ -1,4 +1,4 @@
-import { Collection, Events, GuildMember, Message } from 'discord.js';
+import { Events, GuildMember, Message } from 'discord.js';
 
 import { handleButton } from './button-handler.js';
 import { allServerData, client } from './client.js';
@@ -12,7 +12,7 @@ client.on(Events.ClientReady, async () => {
 
     await restoreServerSettings();
 
-    client.deployCommands();
+    client.deployCommands(bot_creds.restrictedGuildIDs);
 });
 
 client.on(Events.GuildMemberRemove, async member => {

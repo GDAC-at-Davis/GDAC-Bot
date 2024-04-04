@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { extendedClient } from './extended-client.js';
 import { GuildInfo } from './guild-info.js';
+import { RoomInfo } from './room-info.js';
 
 const baseClient: Client<true> = new Client({
     intents: [GatewayIntentBits.GuildMessages, GatewayIntentBits.Guilds],
@@ -22,8 +23,10 @@ client.commands = new Collection();
 
 const allServerData = new Collection<Snowflake, GuildInfo>();
 
+const roomInfo = RoomInfo.getInstance();
+
 const _filename = fileURLToPath(import.meta.url);
 
 const _src_dirname = path.dirname(_filename);
 
-export { client, allServerData, _src_dirname };
+export { client, allServerData, _src_dirname, roomInfo };

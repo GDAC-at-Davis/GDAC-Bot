@@ -1,10 +1,11 @@
-import { _src_dirname } from './client.js';
+import { _src_dirname, roomInfo } from './client.js';
 import { allServerData } from './client.js';
 
 import fs from 'node:fs';
 import { GuildInfo, GuildInfoBackup } from './guild-info.js';
 import path from 'path';
 import { Snowflake, Collection } from 'discord.js';
+import { RoomInfo } from './room-info.js';
 
 type backupData = {
     [key: string]: GuildInfoBackup;
@@ -57,4 +58,28 @@ async function restoreServerSettings(): Promise<void> {
     });
 }
 
-export { backupServerSettings, restoreServerSettings };
+async function backupRoomInfo(): Promise<void> {
+    const backupFile = path.join(_src_dirname, '../../backups', 'room_info.json');
+    const json = JSON.stringify(roomInfo.toJSON());
+    fs.writeFile(backupFile, json, { flag: 'w', encoding: 'utf8' }, err => {
+        if (err) {
+            console.error(err);
+        }
+    });
+}
+
+async function restoreRoomInfo(): Promise<void> {
+    const backupFile = path.join(_src_dirname, '../../backups', 'room_info.json');
+    if (!fs.existsSync(backupFile)) {
+        return;
+    }
+    fs.readFile(backupFile, { encoding: 'utf8' }, (err, data) => {
+        if (err) {
+            console.error(err);
+        }
+        const backup = JSON.parse(data);
+        RoomInfo.fromJSON(backup);
+    });
+}
+
+export { backupServerSettings, restoreServerSettings, backupRoomInfo, restoreRoomInfo };

@@ -1,17 +1,18 @@
-import { Client, Collection, REST, Routes } from 'discord.js';
+import { Client, Collection, Guild, REST, Routes, Snowflake } from 'discord.js';
 import path from 'path';
-import { commandData } from './utilities.js';
+import { CommandData, CommandType } from './utilities.js';
 import fs from 'node:fs';
 import { _src_dirname } from './client.js';
 
 class extendedClient extends Client<true> {
-    public commands: Collection<string, commandData>;
+    public commands: Collection<string, CommandData>;
     public constructor(client: Client) {
         super(client.options);
         this.commands = new Collection();
     }
-    public async deployCommands() {
-        const commands = [];
+    public async deployCommands(restrictedGuildIDs: Snowflake[]) {
+        const globalCommands = [];
+        const restrictedCommands = [];
 
         const commandsPath = path.join(_src_dirname, './commands');
         const commandFiles = fs
@@ -20,7 +21,7 @@ class extendedClient extends Client<true> {
 
         for (const file of commandFiles) {
             const filePath = path.join(commandsPath, file);
-            const command = (await import(filePath)).default as commandData;
+            const command = (await import(filePath)).default as CommandData;
             // Set a new item in the Collection with the key as the command name and the value as the exported module
             if (command !== undefined && command !== null) {
                 this.commands.set(command.data.name, command);
@@ -29,7 +30,11 @@ class extendedClient extends Client<true> {
                     `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
                 );
             }
-            commands.push(command.data.toJSON());
+            if (command.type === CommandType.GLOBAL) {
+                globalCommands.push(command.data.toJSON());
+            } else {
+                restrictedCommands.push(command.data.toJSON());
+            }
         }
 
         // Construct and prepare an instance of the REST module
@@ -39,13 +44,20 @@ class extendedClient extends Client<true> {
         (async () => {
             try {
                 console.log(
-                    `Started refreshing ${commands.length} application (/) commands.`
+                    `Started refreshing ${globalCommands.length} application (/) commands.`
                 );
 
                 // The put method is used to fully refresh all commands in the guild with the current set
                 await rest.put(Routes.applicationCommands(this.user.id), {
-                    body: commands
+                    body: globalCommands
                 });
+
+                // for each restricted server push the restricted commands
+                for (const guildId of restrictedGuildIDs) {
+                    await rest.put(Routes.applicationGuildCommands(this.user.id, guildId), {
+                        body: restrictedCommands
+                    });
+                }
 
                 console.log(`Successfully reloaded application (/) commands.`);
             } catch (error) {

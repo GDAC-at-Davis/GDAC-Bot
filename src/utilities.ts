@@ -4,11 +4,17 @@ function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
 }
 
-type commandData = {
+enum CommandType {
+    GLOBAL,
+    RESTRICTED
+}
+
+type CommandData = {
+    type: CommandType;
     data: SlashCommandBuilder;
     execute: (interaction: ChatInputCommandInteraction) => Promise<void>;
 };
 
 type ChannelId = Snowflake;
 
-export { notEmpty, ChannelId, commandData };
+export { notEmpty, ChannelId, CommandType, CommandData };

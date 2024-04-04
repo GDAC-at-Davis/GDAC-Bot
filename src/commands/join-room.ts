@@ -4,10 +4,11 @@ import {
     SlashCommandBuilder
 } from 'discord.js';
 
-import { commandData } from '../utilities.js';
+import { CommandData, CommandType } from '../utilities.js';
 import { allServerData } from '../client.js';
 
 export default {
+    type: CommandType.RESTRICTED,
     data: new SlashCommandBuilder()
         .setName('join_room')
         .setDescription('Join the room for the server.'),
@@ -49,4 +50,4 @@ export default {
             });
         }
     }
-} as commandData;
+} as CommandData;

@@ -6,7 +6,7 @@ import {
     TextBasedChannel,
     TextChannel
 } from 'discord.js';
-import { client } from './client.js';
+import { client, roomInfo } from './client.js';
 import { backupServerSettings } from './backup.js';
 import { DisplayEmbed } from './embeds/display-embed.js';
 import { ControlPanelEmbed } from './embeds/control-panel-embed.js';
@@ -14,22 +14,22 @@ import { ControlPanelEmbed } from './embeds/control-panel-embed.js';
 class GuildInfo {
     public readonly guild: Guild;
     private officerRole: Snowflake | null;
-    private roomName: string | null;
     private officersInRoom: GuildMember[] = [];
     private displayMessages: Message[] = [];
+    private controlPanelMessages: Message[] = [];
 
     constructor(
         guild: Guild,
         officerRole?: Snowflake | null,
-        roomName?: string | null,
         officersInRoom?: GuildMember[],
-        displayMessages?: Message[]
+        displayMessages?: Message[],
+        controlPanelMessages?: Message[]
     ) {
         this.guild = guild;
         this.officerRole = officerRole ?? null;
-        this.roomName = roomName ?? null;
         this.officersInRoom = officersInRoom ?? [];
         this.displayMessages = displayMessages ?? [];
+        this.controlPanelMessages = controlPanelMessages ?? [];
     }
 
     public getOfficerRole(): Snowflake | null {
@@ -39,17 +39,7 @@ class GuildInfo {
     public async setOfficerRole(role: Snowflake | null): Promise<void> {
         this.officerRole = role;
         backupServerSettings(this.guild.id);
-        this.updateDisplays();
-    }
-
-    public getRoomName(): string | null {
-        return this.roomName;
-    }
-
-    public async setRoomName(name: string | null): Promise<void> {
-        this.roomName = name;
-        backupServerSettings(this.guild.id);
-        this.updateDisplays();
+        roomInfo.updateDisplays();
     }
 
     public getOfficersInRoom(): GuildMember[] {
@@ -62,7 +52,7 @@ class GuildInfo {
         }
         this.officersInRoom.push(member);
         backupServerSettings(this.guild.id);
-        this.updateDisplays();
+        roomInfo.updateDisplays();
         return true;
     }
 
@@ -72,7 +62,7 @@ class GuildInfo {
                 officer => officer.id !== member.id
             );
             backupServerSettings(this.guild.id);
-            this.updateDisplays();
+            roomInfo.updateDisplays();
             return true;
         }
         return false;
@@ -81,23 +71,11 @@ class GuildInfo {
     public async createNewDisplay(channel: TextBasedChannel): Promise<void> {
         const embed = DisplayEmbed(
             this.officersInRoom,
-            this.roomName ?? '‼️Room Name Not Set‼️'
+            roomInfo.getRoomName() ?? '‼️Room Name Not Set‼️'
         );
         const message = await channel?.send(embed);
         this.displayMessages.push(message as Message);
         backupServerSettings(this.guild.id);
-    }
-
-    private async updateDisplays(): Promise<void> {
-        await Promise.all(
-            this.displayMessages.map(async message => {
-                const embed = DisplayEmbed(
-                    this.officersInRoom,
-                    this.roomName ?? '‼️Room Name Not Set‼️'
-                );
-                await message.edit(embed);
-            })
-        );
     }
 
     public removeDisplay(message: Message): void {
@@ -109,22 +87,39 @@ class GuildInfo {
         }
     }
 
+    public getDisplayMessages(): Message[] {
+        return this.displayMessages;
+    }
+
     public async createControlPanel(channel: TextBasedChannel): Promise<void> {
         channel.send(
             ControlPanelEmbed(
                 this.officersInRoom,
-                this.roomName ?? '‼️Room Name Not Set‼️'
+                roomInfo.getRoomName() ?? '‼️Room Name Not Set‼️'
             )
         );
+    }
+
+    public async removeControlPanel(message: Message): Promise<void> {
+        if (this.displayMessages.some(display => display.id === message.id)) {
+            this.displayMessages = this.displayMessages.filter(
+                display => display.id !== message.id
+            );
+            backupServerSettings(this.guild.id);
+        }
+    }
+
+    public  getControlPanelMessages(): Message[] {
+        return this.controlPanelMessages;
     }
 
     public toJSON(): GuildInfoBackup {
         return {
             guildId: this.guild.id,
             officerRole: this.officerRole,
-            roomName: this.roomName,
             officersInRoom: this.officersInRoom.map(officer => officer.id),
-            displayMessages: this.displayMessages.map(display => display.id)
+            displayMessages: this.displayMessages.map(display => display.id),
+            controlPanelMessages: this.controlPanelMessages.map(controlPanel => controlPanel.id)
         };
     }
 
@@ -137,14 +132,21 @@ class GuildInfo {
             })
         );
         const displayMessages: Message[] = [];
+        const controlPanelMessages: Message[] = [];
         const channels = await guild.channels.fetch();
         channels.map(async channel => {
             if (channel instanceof TextChannel) {
                 const messages = await channel.messages.fetch();
-                data.displayMessages.forEach(displayId => {
+                data.displayMessages?.forEach(displayId => {
                     const message = messages.get(displayId);
                     if (message !== undefined) {
                         displayMessages.push(message);
+                    }
+                });
+                data.controlPanelMessages?.forEach(controlPanelId => {
+                    const message = messages.get(controlPanelId);
+                    if (message !== undefined) {
+                        controlPanelMessages.push(message);
                     }
                 });
             }
@@ -152,7 +154,6 @@ class GuildInfo {
         const server = new GuildInfo(
             guild,
             data.officerRole,
-            data.roomName,
             officersInRoom,
             displayMessages
         );
@@ -163,9 +164,9 @@ class GuildInfo {
 type GuildInfoBackup = {
     guildId: Snowflake;
     officerRole: Snowflake | null;
-    roomName: string | null;
     officersInRoom: Snowflake[];
     displayMessages: Snowflake[];
+    controlPanelMessages: Snowflake[];
 };
 
 export { GuildInfo, GuildInfoBackup };

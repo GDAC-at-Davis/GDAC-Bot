@@ -6,10 +6,11 @@ import {
     TextChannel
 } from 'discord.js';
 
-import { commandData } from '../utilities.js';
+import { CommandData, CommandType } from '../utilities.js';
 import { allServerData } from '../client.js';
 
 export default {
+    type: CommandType.GLOBAL,
     data: new SlashCommandBuilder()
         .setName('new_display')
         .setDescription('Create new display for server'),
@@ -46,4 +47,4 @@ export default {
             ephemeral: true
         });
     }
-} as commandData;
+} as CommandData;
