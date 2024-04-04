@@ -109,7 +109,7 @@ class GuildInfo {
         }
     }
 
-    public  getControlPanelMessages(): Message[] {
+    public getControlPanelMessages(): Message[] {
         return this.controlPanelMessages;
     }
 
@@ -119,7 +119,9 @@ class GuildInfo {
             officerRole: this.officerRole,
             officersInRoom: this.officersInRoom.map(officer => officer.id),
             displayMessages: this.displayMessages.map(display => display.id),
-            controlPanelMessages: this.controlPanelMessages.map(controlPanel => controlPanel.id)
+            controlPanelMessages: this.controlPanelMessages.map(
+                controlPanel => controlPanel.id
+            )
         };
     }
 

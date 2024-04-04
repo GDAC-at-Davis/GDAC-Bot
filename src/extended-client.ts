@@ -54,9 +54,12 @@ class extendedClient extends Client<true> {
 
                 // for each restricted server push the restricted commands
                 for (const guildId of restrictedGuildIDs) {
-                    await rest.put(Routes.applicationGuildCommands(this.user.id, guildId), {
-                        body: restrictedCommands
-                    });
+                    await rest.put(
+                        Routes.applicationGuildCommands(this.user.id, guildId),
+                        {
+                            body: restrictedCommands
+                        }
+                    );
                 }
 
                 console.log(`Successfully reloaded application (/) commands.`);

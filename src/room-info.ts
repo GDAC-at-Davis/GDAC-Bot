@@ -1,17 +1,15 @@
-import { GuildMember } from "discord.js";
-import { allServerData } from "./client.js";
-import { DisplayEmbed } from "./embeds/display-embed.js";
-import { ControlPanelEmbed } from "./embeds/control-panel-embed.js";
-import { backupRoomInfo } from "./backup.js";
+import { GuildMember } from 'discord.js';
+import { allServerData } from './client.js';
+import { DisplayEmbed } from './embeds/display-embed.js';
+import { ControlPanelEmbed } from './embeds/control-panel-embed.js';
+import { backupRoomInfo } from './backup.js';
 
 // singleton
 class RoomInfo {
     private roomName: string | null;
     static instance: RoomInfo;
 
-    private constructor(
-        roomName?: string | null,
-    ) {
+    private constructor(roomName?: string | null) {
         this.roomName = roomName ?? null;
     }
 
@@ -33,22 +31,33 @@ class RoomInfo {
     }
 
     public async updateDisplays(): Promise<void> {
-        const officerList = allServerData.map(server => {
-            return server.getOfficersInRoom();
-        })
-        .reduce((acc, val) => acc.concat(val), []);
+        const officerList = allServerData
+            .map(server => {
+                return server.getOfficersInRoom();
+            })
+            .reduce((acc, val) => acc.concat(val), []);
 
         await Promise.all(
             allServerData.map(async server => {
                 server.getDisplayMessages().forEach(async message => {
-                    await message.edit(DisplayEmbed(officerList, this.roomName ?? "‼️Room Name Not Set‼️"));
+                    await message.edit(
+                        DisplayEmbed(
+                            officerList,
+                            this.roomName ?? '‼️Room Name Not Set‼️'
+                        )
+                    );
                 });
             })
         );
         await Promise.all(
             allServerData.map(async server => {
                 server.getControlPanelMessages().forEach(async message => {
-                    await message.edit(ControlPanelEmbed(officerList, this.roomName ?? "‼️Room Name Not Set‼️"));
+                    await message.edit(
+                        ControlPanelEmbed(
+                            officerList,
+                            this.roomName ?? '‼️Room Name Not Set‼️'
+                        )
+                    );
                 });
             })
         );
@@ -67,6 +76,6 @@ class RoomInfo {
 
 type RoomInfoBackup = {
     roomName: string | null;
-}
+};
 
 export { RoomInfo };
