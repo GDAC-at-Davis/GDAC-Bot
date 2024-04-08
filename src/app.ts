@@ -4,13 +4,15 @@ import { handleButton } from './button-handler.js';
 import { allServerData, client } from './client.js';
 
 import bot_creds from '../bot_creds.json' assert { type: 'json' };
-import { restoreServerSettings } from './backup.js';
+import { restoreRoomInfo, restoreServerSettings } from './backup.js';
 import { GuildInfo } from './guild-info.js';
 
 client.on(Events.ClientReady, async () => {
     console.log('\nBot is ready!');
 
     await restoreServerSettings();
+
+    await restoreRoomInfo();
 
     client.deployCommands(bot_creds.restrictedGuildIDs);
 });
