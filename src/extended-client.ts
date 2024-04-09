@@ -3,6 +3,7 @@ import path from 'path';
 import { CommandData, CommandType } from './utilities.js';
 import fs from 'node:fs';
 import { _src_dirname } from './client.js';
+import { pathToFileURL } from 'url';
 
 class extendedClient extends Client<true> {
     public commands: Collection<string, CommandData>;
@@ -14,6 +15,7 @@ class extendedClient extends Client<true> {
         const globalCommands = [];
         const restrictedCommands = [];
 
+        // get all js command files
         const commandsPath = path.join(_src_dirname, './commands');
         const commandFiles = fs
             .readdirSync(commandsPath)
@@ -21,7 +23,11 @@ class extendedClient extends Client<true> {
 
         for (const file of commandFiles) {
             const filePath = path.join(commandsPath, file);
-            const command = (await import(filePath)).default as CommandData;
+
+            const fileUrl = pathToFileURL(filePath).toString();
+
+            console.log(`Loading command at ${fileUrl}`);
+            const command = (await import(fileUrl)).default as CommandData;
             // Set a new item in the Collection with the key as the command name and the value as the exported module
             if (command !== undefined && command !== null) {
                 this.commands.set(command.data.name, command);
