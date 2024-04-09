@@ -6,7 +6,7 @@ import { _src_dirname } from './client.js';
 import { pathToFileURL } from 'url';
 
 class extendedClient extends Client<true> {
-    public commands: Collection<string, commandData>;
+    public commands: Collection<string, CommandData>;
     public constructor(client: Client) {
         super(client.options);
         this.commands = new Collection();
@@ -26,7 +26,7 @@ class extendedClient extends Client<true> {
 
             const fileUrl = pathToFileURL(filePath).toString();
 
-            const command = (await import(fileUrl)).default as commandData;
+            const command = (await import(fileUrl)).default as CommandData;
 
             console.log(`Loaded command ${command.data.name} at ${fileUrl}`);
             // Set a new item in the Collection with the key as the command name and the value as the exported module
