@@ -1,6 +1,6 @@
 {
     "discord-app-id": "",
-    "discord-app-oauth-token": "",
+    "discord-app-bot-token": "",
     "restrictedGuildIDs": [],
     "superUserIDs": [],
     "googleCalendarID": "",

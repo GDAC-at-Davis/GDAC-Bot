@@ -88,7 +88,7 @@ client.on(Events.GuildDelete, guild => {
 });
 
 client
-    .login(bot_creds['discord-app-oauth-token'])
+    .login(bot_creds['discord-app-bot-token'])
     .then(() => {
         console.log(`Logged in as ${client.user.username}!`);
     })
