@@ -27,7 +27,11 @@
   },
   "type": "module",
   "dependencies": {
+    "@google-cloud/local-auth": "^2.1.0",
+    "axios": "^1.6.8",
     "discord-api-types": "^0.37.76",
-    "discord.js": "^14.12.1"
+    "discord.js": "^14.12.1",
+    "googleapis": "^105.0.0",
+    "zod": "^3.22.4"
   }
 }

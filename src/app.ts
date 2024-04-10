@@ -3,12 +3,17 @@ import { Events, GuildMember, Message } from 'discord.js';
 import { handleButton } from './button-handler.js';
 import { allServerData, client } from './client.js';
 
-import bot_creds from '../bot_creds.json' assert { type: 'json' };
+import bot_creds from '../creds/bot_creds.json' assert { type: 'json' };
 import { restoreRoomInfo, restoreServerSettings } from './backup.js';
 import { GuildInfo } from './guild-info.js';
+import { checkCalendarConnection } from './calendar-stuff.js';
 
 client.on(Events.ClientReady, async () => {
     console.log('\nBot is ready!');
+
+    await checkCalendarConnection(bot_creds.googleCalendarID)
+        .then(console.log)
+        .catch(console.error);
 
     await restoreServerSettings();
 
@@ -83,7 +88,7 @@ client.on(Events.GuildDelete, guild => {
 });
 
 client
-    .login(bot_creds.token)
+    .login(bot_creds['discord-app-oauth-token'])
     .then(() => {
         console.log(`Logged in as ${client.user.username}!`);
     })
