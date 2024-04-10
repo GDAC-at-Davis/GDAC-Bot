@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx tsc && echo 'Compiled Successfully' && echo '' && node dist/src/app.js",
-    "dev_precompiled": "node dist/src/app.js",
+    "dev-compile": "npx tsc && echo 'Compiled Successfully' && echo '' && node dist/src/app.js",
+    "dev-precompiled": "node dist/src/app.js",
+    "prod-precompiled": "pm2 start dist/src/app.js --name alt-ctrl-lab-bot",
+    "shutdown-prod-instance": "pm2 delete alt-ctrl-lab-bot",
     "format": "npx prettier -w ."
   },
   "repository": {
