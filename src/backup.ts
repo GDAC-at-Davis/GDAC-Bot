@@ -48,9 +48,7 @@ async function restoreServerSettings(): Promise<void> {
             Object.keys(backup).map(async key => {
                 const backupData = backup[key];
                 if (backupData !== undefined) {
-                    const server = await GuildInfo.fromJSON(backupData).catch(err => {
-                        console.error(err);
-                    });
+                    const server = await GuildInfo.fromJSON(backupData);
                     if (server === undefined) {
                         return;
                     }

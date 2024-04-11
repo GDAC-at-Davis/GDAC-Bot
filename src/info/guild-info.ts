@@ -143,22 +143,47 @@ class GuildInfo {
         // Go through each channel in the guild and find the matching display and control panel messages
         await Promise.all(
             channels.map(async channel => {
-                if (channel instanceof TextChannel) {
-                    const messages = await channel.messages.fetch();
-                    data.displayMessages?.forEach(displayId => {
-                        const message = messages.get(displayId);
-                        if (message !== undefined) {
-                            displayMessages.push(message);
-                        }
-                    });
+                if (channel === null || channel === undefined) return;
 
-                    data.controlPanelMessages?.forEach(controlPanelId => {
-                        const message = messages.get(controlPanelId);
+                // check if bot has permissions in the channel
+                let hasViewPermissions =
+                    channel.permissionsFor(client.user ?? '')?.has('ViewChannel') ??
+                    false;
 
-                        if (message !== undefined) {
-                            controlPanelMessages.push(message);
-                        }
-                    });
+                let hasWritePermissions =
+                    channel.permissionsFor(client.user ?? '')?.has('SendMessages') ??
+                    false;
+
+                let hasReadPermissions =
+                    channel
+                        .permissionsFor(client.user ?? '')
+                        ?.has('ReadMessageHistory') ?? false;
+
+                if (
+                    channel instanceof TextChannel &&
+                    hasReadPermissions &&
+                    hasWritePermissions &&
+                    hasViewPermissions
+                ) {
+                    try {
+                        const messages = await channel.messages.fetch();
+                        data.displayMessages?.forEach(displayId => {
+                            const message = messages.get(displayId);
+                            if (message !== undefined) {
+                                displayMessages.push(message);
+                            }
+                        });
+
+                        data.controlPanelMessages?.forEach(controlPanelId => {
+                            const message = messages.get(controlPanelId);
+
+                            if (message !== undefined) {
+                                controlPanelMessages.push(message);
+                            }
+                        });
+                    } catch (error) {
+                        console.error(error);
+                    }
                 }
             })
         );

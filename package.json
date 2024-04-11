@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev-compile": "npx tsc && echo 'Compiled Successfully' && echo '' && node dist/src/app.js",
     "dev-precompiled": "node dist/src/app.js",
-    "prod-compiled": "NODE_ENV=prod pm2 start dist/src/app.js --name alt-ctrl-lab-bot",
+    "prod-compile": "npx tsc && echo 'Compiled Successfully' && echo '' && NODE_ENV=prod pm2 start dist/src/app.js --name alt-ctrl-lab-bot",
+    "prod-compile-win": "npx tsc && echo 'Compiled Successfully' && echo '' && set NODE_ENV=prod&& node dist/src/app.js",
     "prod-precompiled": "NODE_ENV=prod pm2 start dist/src/app.js --name alt-ctrl-lab-bot",
     "shutdown-prod-instance": "pm2 delete alt-ctrl-lab-bot",
     "format": "npx prettier -w ."

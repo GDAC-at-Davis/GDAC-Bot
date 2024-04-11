@@ -52,6 +52,13 @@ function LabStatusEmbed(
 
     messageBuilder.embeds.push(eventListingsEmbed);
 
+    let headerEmbed = new EmbedBuilder()
+        .setColor(0xffffff)
+        .setTitle(`${roomName} Status Tracker!`)
+        .setDescription(`The coolest room on campus, probably`);
+
+    messageBuilder.embeds.unshift(headerEmbed);
+
     return messageBuilder;
 }
 
@@ -81,13 +88,13 @@ function createNoEventEmbed(
     if (!isOpen) {
         statusEmbedBuilder
             .setColor(0xff0000)
-            .setTitle(`${roomName} is CLOSED`)
+            .setTitle(`CURRENTLY CLOSED`)
             .setDescription('No people in the room right now...')
             .setTimestamp(lastUpdated);
     } else {
         statusEmbedBuilder
             .setColor(0x00ff00)
-            .setTitle(`${roomName} is OPEN (Come in!)`)
+            .setTitle(`CURRENTLY OPEN (Come visit!)`)
             .setDescription(
                 `People making sure the place doesn't burn down: \n${officerNames}`
             )
@@ -121,7 +128,7 @@ function createCurrentEventEmbed(
 
     var embedBuilder = new EmbedBuilder()
         .setColor(color)
-        .setTitle(`${roomName} is currently in: ${event.eventSummary}`)
+        .setTitle(`Current Event: ${event.eventSummary}`)
         .setDescription(`${event.eventDescription}\n${presentOfficersNames}`)
         .setFooter({
             text: formatTimeRange(event)

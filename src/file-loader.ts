@@ -10,10 +10,10 @@ export const botCreds = prodMode === true ? bot_creds_prod : bot_creds_dev;
 // Use the same backup for convenience
 export const backupRoomInfoPath: string = path.join(
     '../../backups',
-    prodMode === true ? 'room_info.json' : 'room_info.json'
+    prodMode === true ? 'room_info_prod.json' : 'room_info_dev.json'
 );
 
 export const backupServerSettingsPath: string = path.join(
     '../../backups',
-    prodMode === true ? 'server_settings.json' : 'server_settings.json'
+    prodMode === true ? 'server_settings_prod.json' : 'server_settings_dev.json'
 );
