@@ -71,6 +71,7 @@ function formatTimeRange(event: LabEventModel): string {
     });
 
     let endTime = event.endTime.toLocaleTimeString('en-US', {
+        timeZone: 'America/Los_Angeles',
         hour12: true,
         hour: 'numeric',
         minute: '2-digit'
