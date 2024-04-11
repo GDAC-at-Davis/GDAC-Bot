@@ -1,17 +1,17 @@
 import { Events, GuildMember, Message } from 'discord.js';
 
 import { handleButton } from './button-handler.js';
-import { allServerData, client } from './client.js';
+import { allServerData, calendarInfo, client, roomInfo } from './client.js';
 
-import bot_creds from '../creds/bot_creds.json' assert { type: 'json' };
+import { botCreds, prodMode } from './file-loader.js';
 import { restoreRoomInfo, restoreServerSettings } from './backup.js';
-import { GuildInfo } from './guild-info.js';
-import { checkCalendarConnection } from './calendar-stuff.js';
+import { GuildInfo } from './info/guild-info.js';
 
 client.on(Events.ClientReady, async () => {
-    console.log('\nBot is ready!');
+    console.log(`\nBot is ready! Booting in ${prodMode ? 'Production' : 'Dev'} mode.\n`);
 
-    await checkCalendarConnection(bot_creds.googleCalendarID)
+    await calendarInfo
+        .checkCalendarConnection(botCreds.googleCalendarID)
         .then(console.log)
         .catch(console.error);
 
@@ -19,7 +19,11 @@ client.on(Events.ClientReady, async () => {
 
     await restoreRoomInfo();
 
-    client.deployCommands(bot_creds.restrictedGuildIDs);
+    client.deployCommands(botCreds.restrictedGuildIDs);
+
+    await roomInfo.updateDisplays();
+
+    await calendarInfo.initCalendarRefreshTimer();
 });
 
 client.on(Events.GuildMemberRemove, async member => {
@@ -48,8 +52,18 @@ client.on(Events.MessageCreate, async message => {});
 
 client.on(Events.MessageDelete, async message => {
     var guildMessage: Message;
+
+    if (message.author != null && message.author.id !== client.user?.id) {
+        return;
+    }
+
     if (message.partial) {
-        guildMessage = await message.fetch();
+        try {
+            guildMessage = await message.fetch();
+        } catch (error) {
+            console.error(error);
+            return;
+        }
     } else {
         guildMessage = message;
     }
@@ -58,6 +72,7 @@ client.on(Events.MessageDelete, async message => {
         return;
     }
     server.removeDisplay(guildMessage);
+    server.removeControlPanel(guildMessage);
 });
 
 client.on(Events.InteractionCreate, async interaction => {
@@ -88,7 +103,7 @@ client.on(Events.GuildDelete, guild => {
 });
 
 client
-    .login(bot_creds['discord-app-bot-token'])
+    .login(botCreds['discord-app-bot-token'])
     .then(() => {
         console.log(`Logged in as ${client.user.username}!`);
     })

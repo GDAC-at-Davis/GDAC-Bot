@@ -129,6 +129,5 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-creds/bot_creds.json
-
-backups/server_settings.json
+creds
+backups

@@ -6,10 +6,10 @@ import {
     TextBasedChannel,
     TextChannel
 } from 'discord.js';
-import { client, roomInfo } from './client.js';
-import { backupServerSettings } from './backup.js';
-import { DisplayEmbed } from './embeds/display-embed.js';
-import { ControlPanelEmbed } from './embeds/control-panel-embed.js';
+import { calendarInfo, client, roomInfo } from '../client.js';
+import { backupServerSettings } from '../backup.js';
+import { LabStatusEmbed } from '../embeds/lab-status-embed.js';
+import { ControlPanelEmbed } from '../embeds/control-panel-embed.js';
 
 class GuildInfo {
     public readonly guild: Guild;
@@ -69,8 +69,9 @@ class GuildInfo {
     }
 
     public async createNewDisplay(channel: TextBasedChannel): Promise<void> {
-        const embed = DisplayEmbed(
+        const embed = LabStatusEmbed(
             this.officersInRoom,
+            calendarInfo.getCurrentEvents(),
             roomInfo.getRoomName() ?? '‼️Room Name Not Set‼️'
         );
         const message = await channel?.send(embed);
@@ -92,12 +93,14 @@ class GuildInfo {
     }
 
     public async createControlPanel(channel: TextBasedChannel): Promise<void> {
-        channel.send(
-            ControlPanelEmbed(
-                this.officersInRoom,
-                roomInfo.getRoomName() ?? '‼️Room Name Not Set‼️'
-            )
+        const embed = ControlPanelEmbed(
+            this.officersInRoom,
+            roomInfo.getRoomName() ?? '‼️Room Name Not Set‼️'
         );
+
+        const message = await channel?.send(embed);
+        this.controlPanelMessages.push(message as Message);
+        backupServerSettings(this.guild.id);
     }
 
     public async removeControlPanel(message: Message): Promise<void> {
@@ -136,28 +139,36 @@ class GuildInfo {
         const displayMessages: Message[] = [];
         const controlPanelMessages: Message[] = [];
         const channels = await guild.channels.fetch();
-        channels.map(async channel => {
-            if (channel instanceof TextChannel) {
-                const messages = await channel.messages.fetch();
-                data.displayMessages?.forEach(displayId => {
-                    const message = messages.get(displayId);
-                    if (message !== undefined) {
-                        displayMessages.push(message);
-                    }
-                });
-                data.controlPanelMessages?.forEach(controlPanelId => {
-                    const message = messages.get(controlPanelId);
-                    if (message !== undefined) {
-                        controlPanelMessages.push(message);
-                    }
-                });
-            }
-        });
+
+        // Go through each channel in the guild and find the matching display and control panel messages
+        await Promise.all(
+            channels.map(async channel => {
+                if (channel instanceof TextChannel) {
+                    const messages = await channel.messages.fetch();
+                    data.displayMessages?.forEach(displayId => {
+                        const message = messages.get(displayId);
+                        if (message !== undefined) {
+                            displayMessages.push(message);
+                        }
+                    });
+
+                    data.controlPanelMessages?.forEach(controlPanelId => {
+                        const message = messages.get(controlPanelId);
+
+                        if (message !== undefined) {
+                            controlPanelMessages.push(message);
+                        }
+                    });
+                }
+            })
+        );
+
         const server = new GuildInfo(
             guild,
             data.officerRole,
             officersInRoom,
-            displayMessages
+            displayMessages,
+            controlPanelMessages
         );
         return server;
     }

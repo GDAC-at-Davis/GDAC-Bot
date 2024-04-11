@@ -1,10 +1,11 @@
 import { GuildMember } from 'discord.js';
-import { allServerData } from './client.js';
-import { DisplayEmbed } from './embeds/display-embed.js';
-import { ControlPanelEmbed } from './embeds/control-panel-embed.js';
-import { backupRoomInfo } from './backup.js';
+import { allServerData, calendarInfo } from '../client.js';
+import { LabStatusEmbed } from '../embeds/lab-status-embed.js';
+import { ControlPanelEmbed } from '../embeds/control-panel-embed.js';
+import { backupRoomInfo } from '../backup.js';
 
 // singleton
+// handles the room name and the room display
 class RoomInfo {
     private roomName: string | null;
     static instance: RoomInfo;
@@ -31,6 +32,8 @@ class RoomInfo {
     }
 
     public async updateDisplays(): Promise<void> {
+        console.log('Updating displays');
+
         const officerList = allServerData
             .map(server => {
                 return server.getOfficersInRoom();
@@ -41,8 +44,9 @@ class RoomInfo {
             allServerData.map(async server => {
                 server.getDisplayMessages().forEach(async message => {
                     await message.edit(
-                        DisplayEmbed(
+                        LabStatusEmbed(
                             officerList,
+                            calendarInfo.getCurrentEvents(),
                             this.roomName ?? '‼️Room Name Not Set‼️'
                         )
                     );
@@ -61,6 +65,8 @@ class RoomInfo {
                 });
             })
         );
+
+        console.log('Displays updated');
     }
 
     public toJSON(): RoomInfoBackup {
@@ -70,7 +76,7 @@ class RoomInfo {
     }
 
     public static fromJSON(data: RoomInfoBackup): void {
-        this.instance = new RoomInfo(data.roomName);
+        this.instance.roomName = data.roomName;
     }
 }
 

@@ -1,5 +1,5 @@
 import { ButtonInteraction, GuildMember, GuildMemberRoleManager } from 'discord.js';
-import { allServerData } from './client.js';
+import { allServerData, calendarInfo } from './client.js';
 /**
  * Handles button interactions.
  * @param interaction The interaction to handle.
@@ -41,10 +41,13 @@ async function handleButton(interaction: ButtonInteraction): Promise<void> {
             });
             return;
         } else {
-            await interaction.reply({
+            await interaction.reply('Pong!');
+            await interaction.deleteReply();
+
+            /* await interaction.reply({
                 content: 'You have joined the room',
                 ephemeral: true
-            });
+            }); */
         }
     } else if (action === 'leave') {
         const success = await server.removeOfficerFromRoom(member);
@@ -55,11 +58,22 @@ async function handleButton(interaction: ButtonInteraction): Promise<void> {
             });
             return;
         } else {
-            await interaction.reply({
+            // empty reply
+            await interaction.reply('Pong!');
+            await interaction.deleteReply();
+
+            /* await interaction.reply({
                 content: 'You have left the room',
                 ephemeral: true
-            });
+            }); */
         }
+    } else if (action === 'refresh-calendar') {
+        await calendarInfo.refreshCalendar();
+        await interaction.reply({
+            content: 'Refreshed',
+            ephemeral: true
+        });
+        return;
     }
 }
 

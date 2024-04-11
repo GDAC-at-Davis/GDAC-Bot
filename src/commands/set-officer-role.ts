@@ -7,7 +7,7 @@ import {
 
 import { CommandData, CommandType } from '../utilities.js';
 import { allServerData } from '../client.js';
-import { GuildInfo } from '../guild-info.js';
+import { GuildInfo } from '../info/guild-info.js';
 
 export default {
     type: CommandType.RESTRICTED,

@@ -3,6 +3,7 @@ import {
     BaseMessageOptions,
     ButtonBuilder,
     ButtonStyle,
+    EmbedBuilder,
     EmbedData,
     GuildMember
 } from 'discord.js';
@@ -23,28 +24,36 @@ function ControlPanelEmbed(
         .setEmoji('🚪')
         .setStyle(ButtonStyle.Danger);
 
+    const refreshCalendarButton = new ButtonBuilder()
+        .setCustomId('refresh-calendar')
+        .setLabel('Refresh Calendar')
+        .setEmoji('🔄')
+        .setStyle(ButtonStyle.Secondary);
+
     const buttons = new ActionRowBuilder<ButtonBuilder>().addComponents(
         joinButton,
-        leaveButton
+        leaveButton,
+        refreshCalendarButton
     );
 
+    const embed = new EmbedBuilder()
+        .setColor(0x00ff00)
+        .setTitle(`${roomName} Control Panel`)
+        .setDescription(
+            'Press the join button when you enter the room and the leave button when you leave.'
+        )
+        .addFields(
+            officerList.map(member => {
+                return {
+                    name: member.displayName,
+                    value: member.toString()
+                };
+            })
+        )
+        .setTimestamp(new Date());
+
     return {
-        embeds: [
-            {
-                color: 0x00ff00,
-                title: `${roomName} Control Panel`,
-                description:
-                    'Press the join button when you enter the room and the leave button when you leave.\
-                \n\nOfficers currently in the room:',
-                fields: officerList.map(member => {
-                    return {
-                        name: member.displayName,
-                        value: member.toString()
-                    };
-                }),
-                timestamp: new Date().toISOString()
-            }
-        ],
+        embeds: [embed],
         components: [buttons]
     };
 }

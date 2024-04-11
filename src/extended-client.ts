@@ -4,6 +4,7 @@ import { CommandData, CommandType } from './utilities.js';
 import fs from 'node:fs';
 import { _src_dirname } from './client.js';
 import { pathToFileURL } from 'url';
+import { prodMode } from './file-loader.js';
 
 class extendedClient extends Client<true> {
     public commands: Collection<string, CommandData>;
@@ -11,6 +12,7 @@ class extendedClient extends Client<true> {
         super(client.options);
         this.commands = new Collection();
     }
+
     public async deployCommands(restrictedGuildIDs: Snowflake[]) {
         const globalCommands = [];
         const restrictedCommands = [];
@@ -21,14 +23,17 @@ class extendedClient extends Client<true> {
             .readdirSync(commandsPath)
             .filter(file => file.endsWith('.js'));
 
+        // loop through all the command files and load
         for (const file of commandFiles) {
             const filePath = path.join(commandsPath, file);
 
+            // Make sure path is system agnostic
             const fileUrl = pathToFileURL(filePath).toString();
 
             const command = (await import(fileUrl)).default as CommandData;
 
             console.log(`Loaded command ${command.data.name} at ${fileUrl}`);
+
             // Set a new item in the Collection with the key as the command name and the value as the exported module
             if (command !== undefined && command !== null) {
                 this.commands.set(command.data.name, command);

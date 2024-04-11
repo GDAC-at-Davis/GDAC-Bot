@@ -6,9 +6,9 @@ import {
 
 import { CommandData, CommandType } from '../utilities.js';
 import { allServerData, roomInfo } from '../client.js';
-import { GuildInfo } from '../guild-info.js';
+import { GuildInfo } from '../info/guild-info.js';
 import { backupServerSettings } from '../backup.js';
-import { RoomInfo } from '../room-info.js';
+import { RoomInfo } from '../info/room-info.js';
 
 export default {
     type: CommandType.RESTRICTED,
