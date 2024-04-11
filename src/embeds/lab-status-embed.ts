@@ -64,6 +64,7 @@ function LabStatusEmbed(
 
 function formatTimeRange(event: LabEventModel): string {
     let startTime = event.startTime.toLocaleTimeString('en-US', {
+        timeZone: 'America/Los_Angeles',
         hour12: true,
         hour: 'numeric',
         minute: '2-digit'
