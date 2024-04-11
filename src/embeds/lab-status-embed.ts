@@ -82,7 +82,7 @@ function createNoEventEmbed(
         statusEmbedBuilder
             .setColor(0xff0000)
             .setTitle(`${roomName} is CLOSED`)
-            .setDescription('No authorized people in the room right now...')
+            .setDescription('No people in the room right now...')
             .setTimestamp(lastUpdated);
     } else {
         statusEmbedBuilder
