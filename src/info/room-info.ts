@@ -32,8 +32,6 @@ class RoomInfo {
     }
 
     public async updateDisplays(): Promise<void> {
-        console.log('Updating displays');
-
         const officerList = allServerData
             .map(server => {
                 return server.getOfficersInRoom();
@@ -65,8 +63,6 @@ class RoomInfo {
                 });
             })
         );
-
-        console.log('Displays updated');
     }
 
     public toJSON(): RoomInfoBackup {

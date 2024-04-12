@@ -62,7 +62,6 @@ class CalendarInfo {
     }
 
     public async refreshCalendar() {
-        console.log('Refreshing calendar');
         this.currentEvents = await this.fetchUpcomingLabEvents();
         roomInfo.updateDisplays();
     }
@@ -108,27 +107,23 @@ class CalendarInfo {
         const endOfDayLocal = new Date();
 
         // translate to America/Los_Angeles timezone
-        const endOfDayPST = new Date(
-            endOfDayLocal.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })
+        endOfDayLocal.setHours(
+            endOfDayLocal.getHours() + endOfDayLocal.getTimezoneOffset() / 60 - 7
         );
 
-        // set to end of day
-        endOfDayPST.setHours(23, 59, 59, 999);
+        // set to end of PST day
+        endOfDayLocal.setHours(23, 59, 59, 999);
 
-        console.log(
-            'Fetching up until ' +
-                endOfDayPST.getDay() +
-                '|' +
-                endOfDayPST.getHours() +
-                ':' +
-                endOfDayPST.getMinutes()
+        // translate back to local
+        endOfDayLocal.setHours(
+            endOfDayLocal.getHours() - endOfDayLocal.getTimezoneOffset() / 60 + 7
         );
 
         const calendarUrl = this.buildCalendarURL({
             calendarId: botCreds.googleCalendarID,
             apiKey: botCreds.googleCalendarAPIKey,
             timeMin: new Date(),
-            timeMax: endOfDayPST,
+            timeMax: endOfDayLocal,
             maxResults: 100 // change this value to fetch more
         });
         const response = await axios
