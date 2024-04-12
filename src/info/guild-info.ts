@@ -68,6 +68,13 @@ class GuildInfo {
         return false;
     }
 
+    public async removeAllOfficersFromRoom(member: GuildMember): Promise<boolean> {
+        this.officersInRoom = [];
+        backupServerSettings(this.guild.id);
+        roomInfo.updateDisplays();
+        return false;
+    }
+
     public async createNewDisplay(channel: TextBasedChannel): Promise<void> {
         const embed = LabStatusEmbed(
             this.officersInRoom,

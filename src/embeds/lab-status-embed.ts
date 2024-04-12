@@ -25,8 +25,7 @@ function LabStatusEmbed(
     // Create an embed for listing calendar events
     let eventListingsEmbed = new EmbedBuilder()
         .setColor(0x50ddf2)
-        .setTitle("Today's Lab Schedule")
-        .setTimestamp(lastUpdated);
+        .setTitle("Today's Lab Schedule");
 
     for (const event of labEvents) {
         // is it occuring right now?
@@ -96,11 +95,13 @@ function createNoEventEmbed(
     } else {
         statusEmbedBuilder
             .setColor(0x00ff00)
-            .setTitle(`CURRENTLY OPEN (Come visit!)`)
+            .setTitle(`CURRENTLY OPEN`)
             .setDescription(
-                `People making sure the place doesn't burn down: \n${officerNames}`
-            )
-            .setTimestamp(lastUpdated);
+                `**Come and do work or just chill!**\n
+                People making sure the place doesn't burn down: \n${officerNames}
+                \nദ്ദി ˉ꒳ˉ )✧
+                `
+            );
     }
 
     return statusEmbedBuilder;
