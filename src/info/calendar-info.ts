@@ -107,11 +107,24 @@ class CalendarInfo {
         // Make API Request
         const endOfDayPST = new Date();
 
+        console.log(
+            'Current time: ' + endOfDayPST.getHours() + ':' + endOfDayPST.getMinutes()
+        );
+
         // translate to America/Los_Angeles timezone
         endOfDayPST.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' });
 
         // set to end of day
         endOfDayPST.setHours(23, 59, 59, 999);
+
+        console.log(
+            'Fetching up until ' +
+                endOfDayPST.getDay() +
+                '|' +
+                endOfDayPST.getHours() +
+                ':' +
+                endOfDayPST.getMinutes()
+        );
 
         const calendarUrl = this.buildCalendarURL({
             calendarId: botCreds.googleCalendarID,
