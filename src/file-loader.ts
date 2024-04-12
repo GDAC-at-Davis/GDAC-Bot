@@ -3,6 +3,8 @@ import bot_creds_prod from '../creds/bot_creds_prod.json' assert { type: 'json' 
 
 import path from 'path';
 
+// Resolve paths to backup and creds files based on prod or dev
+
 export const prodMode = process.env.NODE_ENV === 'prod';
 
 export const botCreds = prodMode === true ? bot_creds_prod : bot_creds_dev;

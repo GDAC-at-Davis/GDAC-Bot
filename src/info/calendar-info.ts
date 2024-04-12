@@ -105,18 +105,19 @@ class CalendarInfo {
 
     private async fetchUpcomingLabEvents(): Promise<LabEventModel[]> {
         // Make API Request
-        const nextWeek = new Date();
+        const endOfDayPST = new Date();
 
-        // Show next 3 days
-        nextWeek.setDate(nextWeek.getDate());
-        // set time to end of day
-        nextWeek.setHours(23, 59, 59, 999);
+        // translate to America/Los_Angeles timezone
+        endOfDayPST.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' });
+
+        // set to end of day
+        endOfDayPST.setHours(23, 59, 59, 999);
 
         const calendarUrl = this.buildCalendarURL({
             calendarId: botCreds.googleCalendarID,
             apiKey: botCreds.googleCalendarAPIKey,
             timeMin: new Date(),
-            timeMax: nextWeek,
+            timeMax: endOfDayPST,
             maxResults: 100 // change this value to fetch more
         });
         const response = await axios
