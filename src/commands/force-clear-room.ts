@@ -41,13 +41,13 @@ export default {
 
         if (!success) {
             await interaction.reply({
-                content: 'You are not in the room',
+                content: 'Room is already empty.',
                 ephemeral: true
             });
             return;
         } else {
             await interaction.reply({
-                content: 'You have left the room',
+                content: 'Cleared the room.',
                 ephemeral: true
             });
         }

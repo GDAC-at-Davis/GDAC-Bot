@@ -69,10 +69,14 @@ class GuildInfo {
     }
 
     public async removeAllOfficersFromRoom(member: GuildMember): Promise<boolean> {
+        if (this.officersInRoom.length === 0) {
+            return false;
+        }
+
         this.officersInRoom = [];
         backupServerSettings(this.guild.id);
         roomInfo.updateDisplays();
-        return false;
+        return true;
     }
 
     public async createNewDisplay(channel: TextBasedChannel): Promise<void> {
