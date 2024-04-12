@@ -105,14 +105,12 @@ class CalendarInfo {
 
     private async fetchUpcomingLabEvents(): Promise<LabEventModel[]> {
         // Make API Request
-        const endOfDayPST = new Date();
-
-        console.log(
-            'Current time: ' + endOfDayPST.getHours() + ':' + endOfDayPST.getMinutes()
-        );
+        const endOfDayLocal = new Date();
 
         // translate to America/Los_Angeles timezone
-        endOfDayPST.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' });
+        const endOfDayPST = new Date(
+            endOfDayLocal.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })
+        );
 
         // set to end of day
         endOfDayPST.setHours(23, 59, 59, 999);
