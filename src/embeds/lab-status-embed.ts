@@ -86,9 +86,7 @@ function createNoEventEmbed(
     let statusEmbedBuilder = new EmbedBuilder();
 
     var officerDisplay =
-        officerNames.length > 0
-            ? `People making sure the place doesn't burn down: \n${officerNames}\n`
-            : '';
+        officerNames.length > 0 ? `\nOfficers in the room: \n${officerNames}\n` : '';
 
     if (!isOpen) {
         statusEmbedBuilder
@@ -101,7 +99,7 @@ function createNoEventEmbed(
             .setColor(0x00ff00)
             .setTitle(`CURRENTLY OPEN`)
             .setDescription(
-                `**Come and do work or just chill!**\n
+                `**Come and do work or just chill!**
                 ${officerDisplay}
                 ദ്ദി ˉ꒳ˉ )✧
                 `
