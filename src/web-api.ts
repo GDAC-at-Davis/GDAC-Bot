@@ -16,6 +16,7 @@ function handlePostRequest(request: http.IncomingMessage, response: http.ServerR
     // Parse body and update room info state
     try {
         request.on('data', function (data) {
+            // Parse request
             var jsonData = JSON.parse(data.toString());
             var body = postRequestDataSchema.safeParse(jsonData);
 
@@ -25,8 +26,11 @@ function handlePostRequest(request: http.IncomingMessage, response: http.ServerR
                 return;
             }
 
+            // Update room info state
             var setRoomOpen: boolean = body.data.setRoomOpen ?? roomInfo.getIsRoomOpen();
             roomInfo.setIsRoomOpen(setRoomOpen);
+
+            // Success response
             response.writeHead(200, { 'Content-Type': 'textplain' });
             response.end('Set room status to ' + setRoomOpen);
         });
@@ -57,10 +61,10 @@ const server = http.createServer(
     }
 );
 
-var port = 8080;
+function startWebServer(port: number) {
+    //listen for request on port 3000, and as a callback function have the port listened on logged
+    server.listen(port, '0.0.0.0');
+    console.log('web-api server listening on port ' + port + ' with ip ');
+}
 
-//listen for request on port 3000, and as a callback function have the port listened on logged
-server.listen(port, '0.0.0.0');
-console.log('web-api server listening on port ' + port + ' with ip ');
-
-export default server;
+export { startWebServer };

@@ -4,5 +4,6 @@
     "restrictedGuildIDs": [],
     "superUserIDs": [],
     "googleCalendarID": "",
-    "googleCalendarAPIKey": ""
+    "googleCalendarAPIKey": "",
+    "webServerPort": 8080
 }
