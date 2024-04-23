@@ -42,7 +42,6 @@ function handlePostRequest(request: http.IncomingMessage, response: http.ServerR
 
 function handleGetRequest(request: http.IncomingMessage, response: http.ServerResponse) {
     response.writeHead(200, { 'Content-Type': 'json' });
-    console.log('GET request received');
 
     // respond with room info state
     response.end(JSON.stringify(roomInfo.toJSON()));
@@ -51,6 +50,9 @@ function handleGetRequest(request: http.IncomingMessage, response: http.ServerRe
 //Create HTTP server and listen on port 3000 for requests
 const server = http.createServer(
     (request: http.IncomingMessage, response: http.ServerResponse) => {
+        // log the request
+        console.log(request.method + ' ' + request.url);
+
         if (request.method == 'GET') {
             handleGetRequest(request, response);
         } else if (request.method == 'POST') {
