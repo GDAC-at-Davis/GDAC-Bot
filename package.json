@@ -37,6 +37,7 @@
     "discord-api-types": "^0.37.76",
     "discord.js": "^14.12.1",
     "googleapis": "^105.0.0",
+    "ws": "^8.16.0",
     "zod": "^3.22.4"
   }
 }

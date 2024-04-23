@@ -3,15 +3,18 @@ import { allServerData, calendarInfo } from '../client.js';
 import { LabStatusEmbed } from '../embeds/lab-status-embed.js';
 import { ControlPanelEmbed } from '../embeds/control-panel-embed.js';
 import { backupRoomInfo } from '../backup.js';
+import { z } from 'zod';
 
 // singleton
 // handles the room name and the room display
 class RoomInfo {
     private roomName: string | null;
+    private isRoomOpen: boolean;
     static instance: RoomInfo;
 
     private constructor(roomName?: string | null) {
         this.roomName = roomName ?? null;
+        this.isRoomOpen = false;
     }
 
     public static getInstance(): RoomInfo {
@@ -31,6 +34,16 @@ class RoomInfo {
         this.updateDisplays();
     }
 
+    public getIsRoomOpen(): boolean {
+        return this.isRoomOpen;
+    }
+
+    public async setIsRoomOpen(isOpen: boolean): Promise<void> {
+        this.isRoomOpen = isOpen;
+        backupRoomInfo();
+        this.updateDisplays();
+    }
+
     public async updateDisplays(): Promise<void> {
         const officerList = allServerData
             .map(server => {
@@ -42,11 +55,7 @@ class RoomInfo {
             allServerData.map(async server => {
                 server.getDisplayMessages().forEach(async message => {
                     await message.edit(
-                        LabStatusEmbed(
-                            officerList,
-                            calendarInfo.getCurrentEvents(),
-                            this.roomName ?? '‼️Room Name Not Set‼️'
-                        )
+                        LabStatusEmbed(officerList, calendarInfo.getCurrentEvents(), this)
                     );
                 });
             })
@@ -67,17 +76,35 @@ class RoomInfo {
 
     public toJSON(): RoomInfoBackup {
         return {
-            roomName: this.roomName
+            roomName: this.roomName,
+            isRoomOpen: this.isRoomOpen
         };
     }
 
-    public static fromJSON(data: RoomInfoBackup): void {
-        this.instance.roomName = data.roomName;
+    public static fromJSON(data: any): void {
+        const unpack = roomInfoDataSchema.safeParse(data);
+
+        if (!unpack.success) {
+            console.error(unpack.error.errors);
+            return;
+        }
+
+        this.instance.roomName = unpack.data.roomName;
+        this.instance.isRoomOpen = unpack.data.isRoomOpen ?? false;
     }
 }
 
 type RoomInfoBackup = {
     roomName: string | null;
+    isRoomOpen: boolean | null;
 };
+
+/**
+ * Validation schema for room-info data
+ */
+const roomInfoDataSchema = z.object({
+    roomName: z.string().nullable(),
+    isRoomOpen: z.boolean().nullable()
+});
 
 export { RoomInfo };

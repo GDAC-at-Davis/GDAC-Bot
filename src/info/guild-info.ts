@@ -83,7 +83,7 @@ class GuildInfo {
         const embed = LabStatusEmbed(
             this.officersInRoom,
             calendarInfo.getCurrentEvents(),
-            roomInfo.getRoomName() ?? '‼️Room Name Not Set‼️'
+            roomInfo
         );
         const message = await channel?.send(embed);
         this.displayMessages.push(message as Message);

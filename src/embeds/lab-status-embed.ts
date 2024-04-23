@@ -1,27 +1,25 @@
 import { Base, BaseMessageOptions, EmbedBuilder, GuildMember } from 'discord.js';
 import { LabEventModel, LabEventType } from '../info/calendar-info.js';
+import { RoomInfo } from '../info/room-info.js';
 
 function LabStatusEmbed(
     officerList: GuildMember[],
     labEvents: LabEventModel[],
-    roomName: string
+    roomInfo: RoomInfo
 ): BaseMessageOptions {
-    const isOpen = officerList.length > 0;
+    const roomName = roomInfo.getRoomName() ?? '‼️Room Name Not Set‼️';
+    const isOpen = roomInfo.getIsRoomOpen();
     const lastUpdated = new Date();
+    const currentTimestamp = new Date();
+    const officerNames = officerList.map(member => member.toString()).join('\n');
 
-    let officerNames = officerList.map(member => member.toString()).join('\n');
+    let messageBuilder: BaseMessageOptions = {} as BaseMessageOptions;
+    messageBuilder.embeds = [];
 
     // Default embed, when no events are occuring
     let noEventEmbed = createNoEventEmbed(isOpen, roomName, lastUpdated, officerNames);
 
     let currentEventEmbed = null;
-
-    let messageBuilder: BaseMessageOptions = {} as BaseMessageOptions;
-
-    messageBuilder.embeds = [];
-
-    const currentTimestamp = new Date();
-
     // Create an embed for listing calendar events
     let eventListingsEmbed = new EmbedBuilder()
         .setColor(0x50ddf2)
@@ -86,6 +84,12 @@ function createNoEventEmbed(
     officerNames: string
 ): EmbedBuilder {
     let statusEmbedBuilder = new EmbedBuilder();
+
+    var officerDisplay =
+        officerNames.length > 0
+            ? `People making sure the place doesn't burn down: \n${officerNames}\n`
+            : '';
+
     if (!isOpen) {
         statusEmbedBuilder
             .setColor(0xff0000)
@@ -98,8 +102,8 @@ function createNoEventEmbed(
             .setTitle(`CURRENTLY OPEN`)
             .setDescription(
                 `**Come and do work or just chill!**\n
-                People making sure the place doesn't burn down: \n${officerNames}
-                \nദ്ദി ˉ꒳ˉ )✧
+                ${officerDisplay}
+                ദ്ദി ˉ꒳ˉ )✧
                 `
             );
     }

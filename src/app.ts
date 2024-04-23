@@ -7,6 +7,8 @@ import { botCreds, prodMode } from './file-loader.js';
 import { restoreRoomInfo, restoreServerSettings } from './backup.js';
 import { GuildInfo } from './info/guild-info.js';
 
+import server from './web-api.js';
+
 client.on(Events.ClientReady, async () => {
     console.log(`\nBot is ready! Booting in ${prodMode ? 'Production' : 'Dev'} mode.\n`);
 
@@ -24,6 +26,8 @@ client.on(Events.ClientReady, async () => {
     await roomInfo.updateDisplays();
 
     await calendarInfo.initCalendarRefreshTimer();
+
+    let startServer = server;
 });
 
 client.on(Events.GuildMemberRemove, async member => {
