@@ -5,16 +5,24 @@ import { ControlPanelEmbed } from '../embeds/control-panel-embed.js';
 import { backupRoomInfo } from '../backup.js';
 import { z } from 'zod';
 
+enum RoomOpenState {
+    No = 0,
+    Yes = 1,
+    OfficerDependent = 2
+}
+
 // singleton
 // handles the room name and the room display
 class RoomInfo {
     private roomName: string | null;
-    private isRoomOpen: boolean;
+
+    // 0 is closed, 1 is open, 2 is dependent on officer presence
+    private roomOpenState: number;
     static instance: RoomInfo;
 
     private constructor(roomName?: string | null) {
         this.roomName = roomName ?? null;
-        this.isRoomOpen = false;
+        this.roomOpenState = RoomOpenState.No;
     }
 
     public static getInstance(): RoomInfo {
@@ -34,12 +42,15 @@ class RoomInfo {
         this.updateDisplays();
     }
 
-    public getIsRoomOpen(): boolean {
-        return this.isRoomOpen;
+    public getroomOpenState(): RoomOpenState {
+        return this.roomOpenState;
     }
 
-    public async setIsRoomOpen(isOpen: boolean): Promise<void> {
-        this.isRoomOpen = isOpen;
+    public async setroomOpenState(isOpen: number): Promise<void> {
+        if (isOpen < 0 || isOpen > 2) {
+            return;
+        }
+        this.roomOpenState = isOpen;
         backupRoomInfo();
         this.updateDisplays();
     }
@@ -77,7 +88,7 @@ class RoomInfo {
     public toJSON(): RoomInfoBackup {
         return {
             roomName: this.roomName,
-            isRoomOpen: this.isRoomOpen
+            roomOpenState: this.roomOpenState
         };
     }
 
@@ -90,13 +101,13 @@ class RoomInfo {
         }
 
         this.instance.roomName = unpack.data.roomName;
-        this.instance.isRoomOpen = unpack.data.isRoomOpen ?? false;
+        this.instance.roomOpenState = unpack.data.roomOpenState ?? RoomOpenState.No;
     }
 }
 
 type RoomInfoBackup = {
     roomName: string | null;
-    isRoomOpen: boolean | null;
+    roomOpenState: RoomOpenState | null;
 };
 
 /**
@@ -104,7 +115,7 @@ type RoomInfoBackup = {
  */
 const roomInfoDataSchema = z.object({
     roomName: z.string().nullable(),
-    isRoomOpen: z.boolean().nullable()
+    roomOpenState: z.number().nullable()
 });
 
-export { RoomInfo };
+export { RoomInfo, RoomOpenState };

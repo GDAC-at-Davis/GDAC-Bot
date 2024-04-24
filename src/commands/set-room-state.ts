@@ -11,9 +11,14 @@ export default {
     type: CommandType.RESTRICTED,
     isGlobal: false,
     data: new SlashCommandBuilder()
-        .setName('toggle_room_open')
-        .addBooleanOption(option =>
-            option.setName('open').setDescription('Open the room').setRequired(true)
+        .setName('set_room_state')
+        .addIntegerOption(option =>
+            option
+                .setName('state')
+                .setDescription(
+                    '0 is closed, 1 is open, 2 is dependent on officer presence'
+                )
+                .setRequired(true)
         )
         .setDescription('Set the room open/closed (same as using the web API)'),
 
@@ -41,9 +46,10 @@ export default {
             return;
         }
 
-        var open = interaction.options.getBoolean('open') ?? roomInfo.getIsRoomOpen();
+        var newState =
+            interaction.options.getInteger('state') ?? roomInfo.getroomOpenState();
 
-        var success = roomInfo.setIsRoomOpen(open);
+        var success = roomInfo.setroomOpenState(newState);
 
         if (!success) {
             await interaction.reply({
@@ -53,7 +59,7 @@ export default {
             return;
         } else {
             await interaction.reply({
-                content: `Set room to ${open ? "open" : "closed"}.`,
+                content: `Set room state to ${newState}.`,
                 ephemeral: true
             });
         }

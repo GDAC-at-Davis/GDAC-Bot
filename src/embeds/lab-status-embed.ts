@@ -8,7 +8,8 @@ function LabStatusEmbed(
     roomInfo: RoomInfo
 ): BaseMessageOptions {
     const roomName = roomInfo.getRoomName() ?? '‼️Room Name Not Set‼️';
-    const isOpen = roomInfo.getIsRoomOpen();
+    const roomOpenState = roomInfo.getroomOpenState();
+    const isOpen = roomOpenState === 1 || (roomOpenState === 2 && officerList.length > 0);
     const lastUpdated = new Date();
     const currentTimestamp = new Date();
     const officerNames = officerList.map(member => member.toString()).join('\n');

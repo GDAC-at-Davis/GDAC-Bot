@@ -1,6 +1,7 @@
 import http from 'http';
 import { roomInfo } from './client.js';
 import z from 'zod';
+import { RoomOpenState } from './info/room-info.js';
 
 // Web API for modifying the room status
 // Intended for use by non-discord controls, e.g physical controls in the room
@@ -9,7 +10,7 @@ import z from 'zod';
  * Validation schema for data coming from the post request
  */
 const postRequestDataSchema = z.object({
-    setRoomOpen: z.boolean().nullable()
+    setRoomState: z.number().nullable()
 });
 
 function handlePostRequest(request: http.IncomingMessage, response: http.ServerResponse) {
@@ -27,8 +28,8 @@ function handlePostRequest(request: http.IncomingMessage, response: http.ServerR
             }
 
             // Update room info state
-            var setRoomOpen: boolean = body.data.setRoomOpen ?? roomInfo.getIsRoomOpen();
-            roomInfo.setIsRoomOpen(setRoomOpen);
+            var setRoomOpen: RoomOpenState = body.data.setRoomState ?? roomInfo.getroomOpenState();
+            roomInfo.setroomOpenState(setRoomOpen);
 
             // Success response
             response.writeHead(200, { 'Content-Type': 'textplain' });
