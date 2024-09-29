@@ -1,8 +1,6 @@
-# Alt-Control Lab Discord Bot
+# GDAC Discord Bot
 
-Discord Bot for the Alt-Control Lab at UC Davis
-
-Maintained by GDAC
+Discord Bot for GDAC's discord server
 
 Source code based on Yabob
 https://github.com/KaoushikMurugan/yet-another-better-office-hour-bot
