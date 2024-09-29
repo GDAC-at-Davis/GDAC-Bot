@@ -24,7 +24,7 @@ function LabStatusEmbed(
     // Create an embed for listing calendar events
     let eventListingsEmbed = new EmbedBuilder()
         .setColor(0x50ddf2)
-        .setTitle("Today's Lab Schedule");
+        .setTitle("Today's Schedule");
 
     for (const event of labEvents) {
         // is it occuring right now?
@@ -52,8 +52,8 @@ function LabStatusEmbed(
 
     let headerEmbed = new EmbedBuilder()
         .setColor(0xffffff)
-        .setTitle(`${roomName} Status Tracker!`)
-        .setDescription(`The coolest room on campus, probably`);
+        .setTitle(`${roomName} Status`)
+        .setDescription(`Last Updated: ${lastUpdated.toLocaleTimeString()}`);
 
     messageBuilder.embeds.unshift(headerEmbed);
 
@@ -93,7 +93,7 @@ function createNoEventEmbed(
         statusEmbedBuilder
             .setColor(0xff0000)
             .setTitle(`CURRENTLY CLOSED`)
-            .setDescription('No people in the room right now...')
+            .setDescription('(probably)')
             .setTimestamp(lastUpdated);
     } else {
         statusEmbedBuilder
