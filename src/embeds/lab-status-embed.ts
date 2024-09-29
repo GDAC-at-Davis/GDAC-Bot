@@ -1,6 +1,7 @@
 import { Base, BaseMessageOptions, EmbedBuilder, GuildMember } from 'discord.js';
 import { LabEventModel, LabEventType } from '../info/calendar-info.js';
 import { RoomInfo } from '../info/room-info.js';
+import { toPstDisplayTime } from '../utilities.js';
 
 function LabStatusEmbed(
     officerList: GuildMember[],
@@ -53,7 +54,7 @@ function LabStatusEmbed(
     let headerEmbed = new EmbedBuilder()
         .setColor(0xffffff)
         .setTitle(`${roomName} Status`)
-        .setDescription(`Last Updated: ${lastUpdated.toLocaleTimeString()}`);
+        .setDescription(`Last Updated: ${toPstDisplayTime(lastUpdated)}`);
 
     messageBuilder.embeds.unshift(headerEmbed);
 
@@ -61,19 +62,9 @@ function LabStatusEmbed(
 }
 
 function formatTimeRange(event: LabEventModel): string {
-    let startTime = event.startTime.toLocaleTimeString('en-US', {
-        timeZone: 'America/Los_Angeles',
-        hour12: true,
-        hour: 'numeric',
-        minute: '2-digit'
-    });
+    let startTime = toPstDisplayTime(event.startTime);
 
-    let endTime = event.endTime.toLocaleTimeString('en-US', {
-        timeZone: 'America/Los_Angeles',
-        hour12: true,
-        hour: 'numeric',
-        minute: '2-digit'
-    });
+    let endTime = toPstDisplayTime(event.endTime);
 
     return `${startTime} - ${endTime}`;
 }
